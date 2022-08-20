@@ -1,0 +1,15 @@
+{
+    "manifest_version": 3,
+    "name": "Nomoresurf",
+    "version": "1.0",
+    "description": "Web site blocker",
+    "background": {
+        "service_worker": "background.js"
+    },
+    "permissions": [
+        "storage"
+    ],
+    "action": {
+        "default_popup": "popup.html"
+    }
+}
