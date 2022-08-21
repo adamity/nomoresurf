@@ -1,17 +1,22 @@
-function equalizeWidth(selector) {
-    document.addEventListener('DOMContentLoaded', function () {
-        var elements = document.querySelectorAll(selector);
-        for (var i = 0; i < elements.length; i++) {
-            elements[i].style.width = "auto";
-        }
-        var maxWidth = 0;
-        for (var i = 0; i < elements.length; i++) {
-            if (elements[i].offsetWidth > maxWidth) {
-                maxWidth = elements[i].offsetWidth;
+let blockSiteBtn = document.getElementById('blockSiteBtn');
+let editBlocklistBtn = document.getElementById('editBlocklistBtn');
+
+blockSiteBtn.addEventListener("click", async () => {
+    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    targetURL = new URL(tab.url);
+
+    if (targetURL.hostname.includes(".")) {
+        chrome.storage.sync.get(['blocklist'], function(result) {
+            let blocklist = result.blocklist;
+            if (!blocklist.includes(targetURL.hostname)) {
+                blocklist.push(targetURL.hostname);
+                chrome.storage.sync.set({ blocklist: blocklist });
             }
-        }
-        for (var i = 0; i < elements.length; i++) {
-            elements[i].style.width = maxWidth + "px";
-        }
-    });
-}
+            console.log(blocklist);
+        });
+    }
+});
+
+editBlocklistBtn.addEventListener("click", async () => {
+    console.log("editBlocklistBtn clicked");
+});
