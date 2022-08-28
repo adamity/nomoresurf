@@ -1,6 +1,26 @@
 let blockSiteBtn = document.getElementById('blockSiteBtn');
 let editBlocklistBtn = document.getElementById('editBlocklistBtn');
 
+async function blockSite() {
+    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    targetURL = new URL(tab.url);
+    blockSiteBtn.innerText = `Block ${targetURL.hostname}`;
+
+    if (targetURL.protocol != "http:" && targetURL.protocol != "https:") {
+        blockSiteBtn.innerText = "This site cannot be blocked";
+        blockSiteBtn.disabled = true;
+    } else {
+        chrome.storage.sync.get('blocklist', function(data) {
+            if (data.blocklist.includes(targetURL.hostname)) {
+                blockSiteBtn.innerText = "This site is already blocked";
+                blockSiteBtn.disabled = true;
+            }
+        });
+    }
+}
+
+blockSite();
+
 blockSiteBtn.addEventListener("click", async () => {
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     targetURL = new URL(tab.url);
@@ -18,5 +38,9 @@ blockSiteBtn.addEventListener("click", async () => {
 });
 
 editBlocklistBtn.addEventListener("click", async () => {
-    console.log("editBlocklistBtn clicked");
+    if (chrome.runtime.openOptionsPage) {
+        chrome.runtime.openOptionsPage();
+    } else {
+        window.open(chrome.runtime.getURL('options.html'));
+    }
 });

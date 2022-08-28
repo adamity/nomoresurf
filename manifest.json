@@ -3,6 +3,7 @@
     "name": "Nomoresurf",
     "version": "1.0",
     "description": "Web site blocker",
+    "options_page": "options.html",
     "background": {
         "service_worker": "background.js"
     },
