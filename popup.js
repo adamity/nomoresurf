@@ -10,6 +10,9 @@ async function blockSite() {
         blockSiteBtn.innerText = "This site cannot be blocked";
         blockSiteBtn.disabled = true;
     } else {
+        let urlLogo = await fetch(`https://logo.clearbit.com/${targetURL.hostname}`);
+        console.log(urlLogo);
+
         chrome.storage.sync.get('blocklist', function(data) {
             if (data.blocklist.includes(targetURL.hostname)) {
                 blockSiteBtn.innerText = "This site is already blocked";

@@ -8,10 +8,60 @@
     <link rel="icon" type="image/png" href="/images/nomoresurf.ico">
     <title>Nomoresurf</title>
     <link rel="stylesheet" href="/bootstrap-5.2.0-dist/css/bootstrap.min.css">
+    <style>
+        .scroller,
+        .fc-scroller {
+            overflow-y: auto;
+            scrollbar-color: #70707066 #e5e5e566;
+            scrollbar-width: thin;
+        }
+
+        .scroller::-webkit-scrollbar,
+        .fc-scroller::-webkit-scrollbar {
+            width: 7px;
+            background-color: #e5e5e566; /* or add it to the track */
+            border-radius: 8px;
+        }
+
+        .scroller::-webkit-scrollbar-thumb,
+        .fc-scroller::-webkit-scrollbar-thumb {
+            background: #70707066;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 
-<body>
+<body class="vh-100">
+    <nav class="navbar navbar-light border-bottom mb-5">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">
+                <img src="./images/nomoresurf.png" alt="" height="25" class="d-inline-block align-text-top">omoresurf
+            </span>
 
+            <a href="https://www.buymeacoffee.com/consistentlad" target="_blank" class="text-decoration-none">
+                <img src="./images/bmc-full-logo-no-background.png" alt="Buy me a coffee." height="25">
+            </a>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 680px;">
+        <div class="mb-5">
+            <label for="websiteInput" class="form-label lead">Add Website</label>
+            <div class="d-flex">
+                <input type="text" class="form-control" id="websiteInput" placeholder="Enter a website address">
+                <button type="button" class="btn btn-sm btn-dark rounded-pill px-4 ms-3" id="addWebsite">Add</button>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <label for="exampleFormControlTextarea1" class="form-label lead">Block List</label>
+            <div class="card">
+                <div id="blocklistContainer" class="card-body overflow-auto scroller" style="height: 50vh;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./options.js"></script>
 </body>
 
 </html>
