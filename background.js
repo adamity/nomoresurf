@@ -10,7 +10,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     chrome.storage.sync.get(['blocklist'], function(result) {
         let blocklist = result.blocklist;
         if (blocklist.includes(targetURL.hostname)) {
-            chrome.tabs.update(tabId, { url: chrome.runtime.getURL('redirect.html') });
+            chrome.tabs.update(tabId, { url: chrome.runtime.getURL(`redirect.html?url=${targetURL.hostname}`) });
         }
     });
 });
