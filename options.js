@@ -3,14 +3,29 @@ let deleteBtn = document.getElementsByClassName('btn-delete');
 let addWebsite = document.getElementById("addWebsite");
 
 addWebsite.addEventListener("click", async () => {
-    let input = document.getElementById("websiteInput").value;
     let blocklist = await getBlocklist();
-    if (!blocklist.includes(input)) {
-        blocklist.push(input);
-        chrome.storage.sync.set({ blocklist: blocklist });
-        console.log(blocklist);
-        location.reload();
-    }
+    let input = document.getElementById("websiteInput").value;
+    if (input.includes("://")) input = input.split("://")[1];
+
+    await fetch(`http://${input}`).then(response => {
+        if (response.status === 200) {
+            console.log(response);
+            let url = new URL(response.url);
+            console.log(url.hostname);
+
+            if (!blocklist.includes(url.hostname)) {
+                blocklist.push(url.hostname);
+                chrome.storage.sync.set({ blocklist: blocklist });
+                location.reload();
+            }
+        } else {
+            alert("Invalid URL");
+            console.log("error");
+        }
+    }).catch(error => {
+        alert("Invalid URL");
+        console.log(error);
+    });
 });
 
 function getBlocklist() {
