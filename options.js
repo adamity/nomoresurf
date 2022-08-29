@@ -1,6 +1,7 @@
 const blocklistContainer = document.getElementById('blocklistContainer');
 let deleteBtn = document.getElementsByClassName('btn-delete');
 let addWebsite = document.getElementById("addWebsite");
+let whitelistMode = document.getElementById('whitelistMode');
 
 addWebsite.addEventListener("click", async () => {
     let blocklist = await getBlocklist();
@@ -41,10 +42,10 @@ chrome.storage.sync.get('blocklist', function(data) {
     let html = "";
 
     for (let i = 0; i < blocklist.length; i++) {
-        html += `<div class="d-flex">`;
+        html += `<div class="d-flex align-items-center user-select-none">`;
         html += `<img src="http://www.google.com/s2/favicons?domain=${blocklist[i]}" class="img-thumbnail" alt="..." style="height: 30px;">`;
         html += `<p class="m-0 ms-2">${blocklist[i]}</p>`;
-        html += `<button type="button" class="btn btn-sm btn-dark btn-delete ms-auto" data-itme="${blocklist[i]}">Delete</button>`;
+        html += `<button type="button" class="btn btn-sm btn-light border btn-delete ms-auto" data-itme="${blocklist[i]}"><i class="bi bi-trash3"></i></button>`;
         html += `</div>`;
         html += `<hr>`;
     }
@@ -65,3 +66,12 @@ chrome.storage.sync.get('blocklist', function(data) {
     }
 });
 
+chrome.storage.sync.get('isWhiteList', function(data) {
+    if (data.isWhiteList) {
+        whitelistMode.checked = true;
+    }
+});
+
+whitelistMode.addEventListener('change', function() {
+    chrome.storage.sync.set({ isWhiteList: this.checked });
+});
