@@ -12,6 +12,5 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         if (blocklist.includes(targetURL.hostname)) {
             chrome.tabs.update(tabId, { url: chrome.runtime.getURL('redirect.html') });
         }
-        console.log(blocklist, targetURL.hostname);
     });
 });
