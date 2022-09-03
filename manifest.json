@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Nomoresurf",
+    "name": "Nomoresurf: No more time-wasting websites!",
     "version": "1.0",
-    "description": "Web site blocker",
+    "description": "Block time-wasting websites, answer math questions to unlock them. Make it harder to procrastinate!",
     "options_page": "options.html",
     "background": {
         "service_worker": "./public/js/background.min.js"
