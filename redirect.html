@@ -8,17 +8,18 @@
     <link rel="icon" type="image/png" href="/images/nomoresurf.ico">
     <title>Nomoresurf</title>
     <link rel="stylesheet" href="/bootstrap-5.2.0-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/custom.css">
 </head>
 
 <body class="vh-100">
     <nav class="navbar navbar-light border-bottom mb-5">
         <div class="container">
             <span class="navbar-brand mb-0 h1">
-                <img src="./images/nomoresurf.png" alt="" height="25" class="d-inline-block align-text-top">omoresurf
+                <img src="./images/nomoresurf.png" alt="" class="d-inline-block align-text-top height-25">omoresurf
             </span>
 
             <a href="https://www.buymeacoffee.com/consistentlad" target="_blank" class="text-decoration-none">
-                <img src="./images/bmc-full-logo-no-background.png" alt="Buy me a coffee." height="25">
+                <img src="./images/bmc-full-logo-no-background.png" alt="Buy me a coffee." class="height-25">
             </a>
         </div>
     </nav>
@@ -27,12 +28,13 @@
         I'm guessing you had a pretty good reason for blocking access to <span id="blockedSite"></span>.
     </p>
 
-    <div class="container h-50 border rounded-4 mb-5" style="max-width: 680px;">
-        <img id="redirectMemeImg" src="https://media.makeameme.org/created/never-procrastinate-because.jpg" class="img-fluid mx-auto d-block h-100" alt="...">
+    <div class="container h-50 border rounded-4 mb-5 max-width-680">
+        <img id="redirectMemeImg" src="" alt="" class="img-fluid mx-auto d-block h-100">
     </div>
 
-    <button id="redirectBtn" type="button" class="btn btn-sm btn-dark rounded-pill px-4 mx-auto d-block">Shoo!</button>
+    <button id="redirectBtn" type="button" class="btn btn-sm btn-dark rounded-pill px-4 mx-auto d-block">Go Back!</button>
 
+    <script src="/bootstrap-5.2.0-dist/js/bootstrap.min.js"></script>
     <script src="./redirect.js"></script>
 </body>
 
