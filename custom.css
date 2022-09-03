@@ -15,10 +15,31 @@
     height: 32px;
 }
 
+.height-50vh {
+    height: 50vh;
+}
+
 .width-110 {
     width: 110px;
 }
 
 .max-width-680 {
     max-width: 680px;
+}
+
+.scroller {
+    overflow-y: auto;
+    scrollbar-color: #70707066 #e5e5e566;
+    scrollbar-width: thin;
+}
+
+.scroller::-webkit-scrollbar {
+    width: 7px;
+    background-color: #e5e5e566;
+    border-radius: 8px;
+}
+
+.scroller::-webkit-scrollbar-thumb {
+    background: #70707066;
+    border-radius: 8px;
 }
