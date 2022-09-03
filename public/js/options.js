@@ -1,4 +1,6 @@
 const blocklistContainer = document.getElementById('blocklistContainer');
+const blocklistEmpty = document.getElementById('blocklistEmpty');
+
 let deleteBtn = document.getElementsByClassName('btn-delete');
 let addWebsiteBtn = document.getElementById("addWebsiteBtn");
 let whitelistMode = document.getElementById('whitelistMode');
@@ -55,7 +57,14 @@ chrome.storage.sync.get('blocklist', function(data) {
         html += `<hr>`;
     }
 
-    blocklistContainer.innerHTML = html;
+    if (html) {
+        blocklistEmpty.classList.add("d-none");
+        blocklistContainer.classList.remove("d-none");
+        blocklistContainer.innerHTML = html;
+    } else {
+        blocklistEmpty.classList.remove("d-none");
+        blocklistContainer.classList.add("d-none");
+    }
 
     for (let i = 0; i < deleteBtn.length; i++) {
         deleteBtn[i].addEventListener('click', function() {
