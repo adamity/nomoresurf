@@ -1,6 +1,6 @@
 const blocklistContainer = document.getElementById('blocklistContainer');
 let deleteBtn = document.getElementsByClassName('btn-delete');
-let addWebsite = document.getElementById("addWebsite");
+let addWebsiteBtn = document.getElementById("addWebsiteBtn");
 let whitelistMode = document.getElementById('whitelistMode');
 
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -8,7 +8,7 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)
 })
 
-addWebsite.addEventListener("click", async () => {
+addWebsiteBtn.addEventListener("click", async () => {
     let blocklist = await getBlocklist();
     let input = document.getElementById("websiteInput").value;
     if (input.includes("://")) input = input.split("://")[1];

@@ -29,9 +29,9 @@
         <div class="mb-5">
             <label for="websiteInput" class="form-label lead">Add Website</label>
             <div class="d-flex align-items-center">
-                <input type="text" class="form-control" id="websiteInput" placeholder="Enter a website address">
+                <input id="websiteInput" type="text" class="form-control" placeholder="Enter a website address">
                 <div>
-                    <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 ms-3" id="addWebsite">
+                    <button id="addWebsiteBtn" type="button" class="btn btn-sm btn-dark rounded-pill px-3 ms-3">
                         <i class="bi bi-plus-lg"></i>
                     </button>
                 </div>
@@ -42,8 +42,8 @@
             <div class="d-flex justify-content-between">
                 <p class="mb-2 lead">Block List</p>
                 <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="whitelistMode">
-                    <label class="form-check-label fw-light user-select-none" for="whitelistMode" data-bs-toggle="tooltip" data-bs-placement="right" title="Block all websites except those on your whitelist.">
+                    <input id="whitelistMode" type="checkbox" class="form-check-input">
+                    <label for="whitelistMode" class="form-check-label fw-light user-select-none" data-bs-toggle="tooltip" data-bs-placement="right" title="Block all websites except those on your whitelist.">
                         Whitelist Mode
                     </label>
                 </div>
