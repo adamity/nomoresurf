@@ -5,7 +5,7 @@
     "description": "Web site blocker",
     "options_page": "options.html",
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "./resources/js/background.js"
     },
     "permissions": [
         "storage",
