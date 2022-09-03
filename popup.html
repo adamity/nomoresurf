@@ -1,31 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nomoresurf</title>
     <link rel="stylesheet" href="/bootstrap-5.2.0-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/custom.css">
 </head>
 
 <body>
-    <div class="container" style="height: 260px; width: 300px;">
+    <div class="container popup-container">
         <div class="d-flex flex-column justify-content-around align-items-center h-100">
-            <img src="/images/nomoresurf.png" alt="nomoresurf logo" height="32">
+            <img src="/images/nomoresurf.png" alt="nomoresurf logo" class="height-32">
 
             <div class="d-flex flex-column align-items-center">
                 <button id="blockSiteBtn" type="button" class="btn btn-sm btn-dark rounded-pill mb-3"></button>
-                <button id="editBlocklistBtn" type="button" class="btn btn-sm btn-light rounded-pill" style="width: 110px;">Edit Block List</button>
+                <button id="editBlocklistBtn" type="button" class="btn btn-sm btn-light rounded-pill width-110">
+                    Edit Block List
+                </button>
             </div>
 
             <a href="https://www.buymeacoffee.com/consistentlad" target="_blank" class="text-decoration-none">
-                <img src="./images/bmc-full-logo-no-background.png" alt="Buy me a coffee." height="20">
+                <img src="./images/bmc-full-logo-no-background.png" alt="Buy me a coffee." class="height-20">
             </a>
         </div>
     </div>
 
-    <script src="/bootstrap-5.2.0-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/bootstrap-5.2.0-dist/js/bootstrap.min.js"></script>
     <script src="/popup.js"></script>
 </body>
 
