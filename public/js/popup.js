@@ -1,46 +1,30 @@
-let blockSiteBtn = document.getElementById('blockSiteBtn');
-let editBlocklistBtn = document.getElementById('editBlocklistBtn');
+import { getBlocklist, getActiveTab } from "./controller.js";
 
-async function blockSite() {
-    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    targetURL = new URL(tab.url);
-    blockSiteBtn.innerText = `Block ${targetURL.hostname}`;
+const blockSiteBtn = document.getElementById('blockSiteBtn');
+const editBlocklistBtn = document.getElementById('editBlocklistBtn');
+const activeTab = await getActiveTab();
+const targetURL = new URL(activeTab.url);
 
-    if (targetURL.protocol != "http:" && targetURL.protocol != "https:") {
-        blockSiteBtn.innerText = "This site cannot be blocked";
+if (targetURL.protocol != "http:" && targetURL.protocol != "https:") {
+    blockSiteBtn.innerText = "This site cannot be blocked";
+    blockSiteBtn.disabled = true;
+} else {
+    const blocklist = await getBlocklist();
+
+    if (blocklist.includes(targetURL.hostname)) {
+        blockSiteBtn.innerText = "This site is already blocked";
         blockSiteBtn.disabled = true;
     } else {
-        let urlLogo = await fetch(`https://logo.clearbit.com/${targetURL.hostname}`);
-        console.log(urlLogo);
-
-        chrome.storage.sync.get('blocklist', function(data) {
-            if (data.blocklist.includes(targetURL.hostname)) {
-                blockSiteBtn.innerText = "This site is already blocked";
-                blockSiteBtn.disabled = true;
-            }
+        blockSiteBtn.innerText = `Block ${targetURL.hostname}`;
+        blockSiteBtn.addEventListener("click", () => {
+            blocklist.push(targetURL.hostname);
+            chrome.storage.sync.set({ blocklist: blocklist });
+            window.close();
         });
     }
 }
 
-blockSite();
-
-blockSiteBtn.addEventListener("click", async () => {
-    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    targetURL = new URL(tab.url);
-
-    if (targetURL.hostname.includes(".")) {
-        chrome.storage.sync.get(['blocklist'], function(result) {
-            let blocklist = result.blocklist;
-            if (!blocklist.includes(targetURL.hostname)) {
-                blocklist.push(targetURL.hostname);
-                chrome.storage.sync.set({ blocklist: blocklist });
-            }
-            console.log(blocklist);
-        });
-    }
-});
-
-editBlocklistBtn.addEventListener("click", async () => {
+editBlocklistBtn.addEventListener("click", () => {
     if (chrome.runtime.openOptionsPage) {
         chrome.runtime.openOptionsPage();
     } else {
