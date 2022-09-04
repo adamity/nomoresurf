@@ -52,7 +52,7 @@ chrome.storage.sync.get('blocklist', function(data) {
         html += `<div class="d-flex align-items-center user-select-none">`;
         html += `<img src="http://www.google.com/s2/favicons?domain=${blocklist[i]}" class="img-thumbnail" alt="..." style="height: 30px;">`;
         html += `<p class="m-0 ms-2">${blocklist[i]}</p>`;
-        html += `<button type="button" class="btn btn-sm btn-light border btn-delete ms-auto" data-itme="${blocklist[i]}"><i class="bi bi-trash3"></i></button>`;
+        html += `<button type="button" class="btn btn-sm btn-light border btn-delete ms-auto" data-item="${blocklist[i]}"><i class="bi bi-trash3"></i></button>`;
         html += `</div>`;
         html += `<hr>`;
     }
@@ -68,7 +68,7 @@ chrome.storage.sync.get('blocklist', function(data) {
 
     for (let i = 0; i < deleteBtn.length; i++) {
         deleteBtn[i].addEventListener('click', function() {
-            let item = this.getAttribute('data-itme');
+            let item = this.getAttribute('data-item');
             chrome.storage.sync.get('blocklist', function(data) {
                 let blocklist = data.blocklist;
                 let index = blocklist.indexOf(item);
