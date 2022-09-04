@@ -25,6 +25,11 @@
         </div>
     </nav>
 
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-dark btn-sm d-block mx-auto" data-bs-toggle="modal" data-bs-target="#unblockModal">
+        WIP Unblock
+    </button>
+
     <div class="container max-width-680">
         <div class="mb-5">
             <label for="websiteInput" class="form-label lead">Add Website</label>
@@ -54,9 +59,66 @@
                 <div id="blocklistContainer" class="card-body overflow-auto scroller height-50vh"></div>
                 <div id="blocklistEmpty" class="card-body overflow-auto scroller height-50vh d-none user-select-none">
                     <div class="d-flex flex-column justify-content-center align-items-center h-100 text-muted">
-                        <img src="./public/images/box.png" alt="Empty box" class="mb-2 opacity-75" style="height: 50px;">
+                        <img src="./public/images/box.png" alt="Empty box" class="mb-2 opacity-75 height-50">
                         <p class="mb-0 fw-normal">No blocked websites</p>
                         <p class="mb-0 fw-light">You will see the website you blocked here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="unblockModal" tabindex="-1" aria-labelledby="unblockModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="mb-0 lead">Unblock Website</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body height-50vh">
+                    <div class="d-none flex-column justify-content-between h-100">
+                        <div class="progress height-4">
+                            <div class="progress-bar bg-dark width-33pct" role="progressbar" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+
+                        <p class="mb-0 fs-1 fw-light text-center user-select-none">56 + 70</p>
+
+                        <div class="d-flex align-items-center">
+                            <input id="answerInput" type="text" class="form-control" placeholder="Enter answer">
+                            <div>
+                                <button id="submitAnswerBtn" type="button" class="btn btn-sm btn-dark rounded-pill px-3 ms-3">
+                                    <i class="bi bi-chevron-double-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column justify-content-between h-100">
+                        <div class="progress height-4">
+                            <div class="progress-bar bg-dark width-100pct" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+
+                        <div class="d-flex flex-column align-items-center">
+                            <img src="./public/images/question.png" alt="Confirm" class="mb-2 opacity-75 height-50">
+                            <p class="mb-0 fw-normal">Are you sure?</p>
+                            <p class="mb-0 fw-light">
+                                Do you really want to unblock www.youtube.com?
+                            </p>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <div>
+                                <button type="button" class="btn btn-sm btn-light border rounded-pill px-3" data-bs-dismiss="modal" aria-label="Close">
+                                    Cancel
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 ms-3">
+                                    Unblock
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
