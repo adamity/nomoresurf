@@ -1,10 +1,8 @@
-let url = new URL(window.location.href);
-let hostname = url.searchParams.get("url");
-let blockedSite = document.getElementById("blockedSite");
-
-let redirectBtn = document.getElementById('redirectBtn');
-let redirectMemeImg = document.getElementById('redirectMemeImg');
-let redirectMeme = [
+const url = new URL(window.location.href).searchParams.get("url");
+const blockedSite = document.getElementById("blockedSite");
+const redirectBtn = document.getElementById('redirectBtn');
+const redirectMemeImg = document.getElementById('redirectMemeImg');
+const redirectMeme = [
     "https://i.imgflip.com/6riw13.jpg",
     "https://i.imgflip.com/6rivix.jpg",
     "https://i.imgflip.com/6riv9c.jpg",
@@ -15,9 +13,9 @@ let redirectMeme = [
     "https://i.imgflip.com/6rixnf.jpg"
 ];
 
-blockedSite.innerText = hostname;
+blockedSite.innerText = url;
 redirectMemeImg.src = redirectMeme[Math.floor(Math.random() * redirectMeme.length)];
 
-redirectBtn.addEventListener("click", async () => {
+redirectBtn.addEventListener("click", () => {
     window.history.go(-2);
 });
