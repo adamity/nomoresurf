@@ -5,7 +5,8 @@
     "description": "Block time-wasting websites, answer math questions to unlock them. Make it harder to procrastinate!",
     "options_page": "options.html",
     "background": {
-        "service_worker": "./public/js/background.min.js"
+        "service_worker": "./public/js/background.js",
+        "type": "module"
     },
     "permissions": [
         "storage",
