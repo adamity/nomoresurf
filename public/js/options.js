@@ -80,14 +80,14 @@ chrome.storage.sync.get('blocklist', function(data) {
     }
 });
 
-chrome.storage.sync.get('isWhiteList', function(data) {
-    if (data.isWhiteList) {
+chrome.storage.sync.get('isWhitelist', function(data) {
+    if (data.isWhitelist) {
         whitelistMode.checked = true;
     }
 });
 
 whitelistMode.addEventListener('change', function() {
-    chrome.storage.sync.set({ isWhiteList: this.checked });
+    chrome.storage.sync.set({ isWhitelist: this.checked });
 });
 
 // A function to generate random math problems, user can pass in the difficulty level
