@@ -1,74 +1,72 @@
 import { getBlocklist, getIsWhitelist, generateMathProblem, validateURL } from "./controller.js";
 
-const whitelistMode = document.getElementById('whitelistMode');
-const unblockQuestionObject = document.getElementsByClassName('unblockQuestionObject');
-const confirmUnblockObject = document.getElementsByClassName('confirmUnblockObject');
-const unblockQuestion = document.getElementById('unblockQuestion');
-const answerInput = document.getElementById('answerInput');
-
-for (let i = 0; i < unblockQuestionObject.length; i++) {
-    unblockQuestionObject[i].classList.add("d-none");
-}
-for (let i = 0; i < confirmUnblockObject.length; i++) {
-    confirmUnblockObject[i].classList.add("d-none");
-}
-
-const deleteBtn = document.getElementsByClassName('btn-delete');
-const blocklist = await getBlocklist();
-const isWhitelist = await getIsWhitelist();
-
 let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)
 })
 
+const addWebsiteBtn = document.getElementById('addWebsiteBtn');
+const websiteInput = document.getElementById("websiteInput");
+const whitelistMode = document.getElementById('whitelistMode');
+
+const unblockQuestionObject = document.getElementsByClassName('unblockQuestionObject');
+const confirmUnblockObject = document.getElementsByClassName('confirmUnblockObject');
+
+const unblockQuestion = document.getElementById('unblockQuestion');
+const answerInput = document.getElementById('answerInput');
+
+const blocklist = await getBlocklist();
+const isWhitelist = await getIsWhitelist();
+
+let correctAnswer = null;
+let progress = 0;
+
 if (isWhitelist) whitelistMode.checked = true;
 renderBlocklist(blocklist);
+toggleObject(confirmUnblockObject, unblockQuestionObject, "class");
 
-document.getElementById("addWebsiteBtn").addEventListener("click", async () => {
-    let websiteInput = document.getElementById("websiteInput");
+addWebsiteBtn.addEventListener("click", async () => {
+    addWebsiteBtn.disabled = true;
+
     let url = websiteInput.value;
     if (url.includes("://")) url = url.split("://")[1];
     url = await validateURL(url);
 
-    if (url) {
-        if (blocklist.includes(url)) {
-            alert("This website is already blocked!");
-        } else {
-            blocklist.push(url);
-            chrome.storage.sync.set({ blocklist: blocklist });
-            renderBlocklist(blocklist);
-            websiteInput.value = "";
-        }
-    } else {
+    if (blocklist.includes(url)) {
+        alert("This site is already blocked!");
+    } else if (!url) {
         alert("Invalid URL");
+    } else {
+        blocklist.push(url);
+        chrome.storage.sync.set({ blocklist: blocklist });
+        renderBlocklist(blocklist);
+        websiteInput.value = "";
+    }
+
+    addWebsiteBtn.disabled = false;
+});
+
+websiteInput.addEventListener("keyup", (event) => {
+    if (event.keyCode === 13) {
+        event.preventDefault();
+        addWebsiteBtn.click();
     }
 });
 
-let toUnblock = "";
-let correctAnswer = null;
-let progress = 0;
-let percent = 0;
-let bar = document.querySelector(".progress-bar");
+whitelistMode.addEventListener('change', () => {
+    chrome.storage.sync.set({ isWhitelist: this.checked });
+});
 
 document.getElementById('submitAnswerBtn').addEventListener('click', () => {
-    let answer = answerInput.value;
-
-    if (answer == correctAnswer) {
-        correctAnswer = setUnblockQuestion();
+    if (answerInput.value == correctAnswer) {
         answerInput.value = "";
-        progress++;
+        updateProgress(++progress);
 
         if (progress > 2) {
-            for (let i = 0; i < unblockQuestionObject.length; i++) {
-                unblockQuestionObject[i].classList.add("d-none");
-            }
-            for (let i = 0; i < confirmUnblockObject.length; i++) {
-                confirmUnblockObject[i].classList.remove("d-none");
-            }
+            toggleObject(unblockQuestionObject, confirmUnblockObject, "class");
+        } else {
+            correctAnswer = setUnblockQuestion();
         }
-
-        makeProgress(progress);
     } else {
         unblockQuestion.style.animation = "shake 0.3s 1";
         setTimeout(() => {
@@ -78,21 +76,18 @@ document.getElementById('submitAnswerBtn').addEventListener('click', () => {
 });
 
 document.getElementById('confirmUnblockBtn').addEventListener('click', () => {
-    let index = blocklist.indexOf(toUnblock);
-    answerInput.value = "";
-    progress = 0;
+    let index = blocklist.indexOf(document.getElementById('selectedURL').value);
     blocklist.splice(index, 1);
     chrome.storage.sync.set({ blocklist: blocklist });
-    renderBlocklist(blocklist);
-});
 
-whitelistMode.addEventListener('change', () => {
-    chrome.storage.sync.set({ isWhitelist: this.checked });
+    resetProgress();
+    renderBlocklist(blocklist);
 });
 
 function renderBlocklist(blocklist) {
     let blocklistContainer = document.getElementById('blocklistContainer');
     let blocklistEmpty = document.getElementById('blocklistEmpty');
+    let deleteBtn = document.getElementsByClassName('btn-delete');
     let html = "";
 
     for (let i = 0; i < blocklist.length; i++) {
@@ -104,43 +99,56 @@ function renderBlocklist(blocklist) {
         html += `<hr>`;
     }
 
-    if (html) {
-        blocklistEmpty.classList.add("d-none");
-        blocklistContainer.classList.remove("d-none");
-        blocklistContainer.innerHTML = html;
-    } else {
-        blocklistEmpty.classList.remove("d-none");
-        blocklistContainer.classList.add("d-none");
-    }
+    blocklistContainer.innerHTML = html;
+    html ? toggleObject(blocklistEmpty, blocklistContainer, "id") : toggleObject(blocklistContainer, blocklistEmpty, "id");
 
     for (let i = 0; i < deleteBtn.length; i++) {
         deleteBtn[i].addEventListener('click', function() {
-            for (let i = 0; i < unblockQuestionObject.length; i++) {
-                unblockQuestionObject[i].classList.remove("d-none");
-            }
-            for (let i = 0; i < confirmUnblockObject.length; i++) {
-                confirmUnblockObject[i].classList.add("d-none");
-            }
-
             let item = this.getAttribute('data-item');
-            toUnblock = item;
-            document.getElementById('toUnblockURL').innerText = item;
-            answerInput.value = "";
-            progress = 0;
-            makeProgress(progress);
+
+            document.getElementById('selectedURL').value = item;
+            document.getElementById('selectedURLText').innerText = item;
+
+            toggleObject(confirmUnblockObject, unblockQuestionObject, "class");
+            resetProgress();
             correctAnswer = setUnblockQuestion();
         });
     }
 }
 
-function makeProgress(progress) {
-    percent = progress * 33.3333333333;
-    bar.style.width = percent + "%";
+function updateProgress(progress) {
+    let percent = progress * 33.3333333333;
+    document.querySelector(".progress-bar").style.width = percent + "%";
+    console.log("Progress updated");
+}
+
+function resetProgress() {
+    answerInput.value = "";
+    correctAnswer = null;
+    progress = 0;
+    console.log("Progress reset");
+    updateProgress(progress);
 }
 
 function setUnblockQuestion() {
     let problem = generateMathProblem(2);
     unblockQuestion.innerText = problem[0];
-    console.log(problem[1]);
+    console.log("Answer: " + problem[1]);
     return problem[1];
+}
+
+function toggleObject(toHide, toShow, type) {
+    if (type == "id") {
+        toHide.style.display = "none";
+        toShow.style.display = "block";
+    } else if (type == "class") {
+        for (let i = 0; i < toHide.length; i++) {
+            toHide[i].classList.add("d-none");
+        }
+        for (let i = 0; i < toShow.length; i++) {
+            toShow[i].classList.remove("d-none");
+        }
+    }
+
+    console.log("Toggled");
 }
