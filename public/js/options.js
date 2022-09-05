@@ -119,14 +119,12 @@ function renderBlocklist(blocklist) {
 function updateProgress(progress) {
     let percent = progress * 33.3333333333;
     document.querySelector(".progress-bar").style.width = percent + "%";
-    console.log("Progress updated");
 }
 
 function resetProgress() {
     answerInput.value = "";
     correctAnswer = null;
     progress = 0;
-    console.log("Progress reset");
     updateProgress(progress);
 }
 
@@ -149,6 +147,4 @@ function toggleObject(toHide, toShow, type) {
             toShow[i].classList.remove("d-none");
         }
     }
-
-    console.log("Toggled");
 }
