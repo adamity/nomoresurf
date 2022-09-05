@@ -10,13 +10,15 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     const blocklist = await getBlocklist();
     const isWhitelist = await getIsWhitelist();
 
-    if (blocklist.includes(targetURL.hostname) && !isWhitelist) {
-        chrome.tabs.update(tabId, {
-            url: chrome.runtime.getURL(`redirect.html?url=${targetURL.hostname}`)
-        });
-    } else if (!blocklist.includes(targetURL.hostname) && isWhitelist) {
-        chrome.tabs.update(tabId, {
-            url: chrome.runtime.getURL(`redirect.html?url=${targetURL.hostname}`)
-        });
+    if (targetURL.protocol == "http:" || targetURL.protocol == "https:") {
+        if (blocklist.includes(targetURL.hostname) && !isWhitelist) {
+            chrome.tabs.update(tabId, {
+                url: chrome.runtime.getURL(`redirect.html?url=${targetURL.hostname}`)
+            });
+        } else if (!blocklist.includes(targetURL.hostname) && isWhitelist) {
+            chrome.tabs.update(tabId, {
+                url: chrome.runtime.getURL(`redirect.html?url=${targetURL.hostname}`)
+            });
+        }
     }
 });

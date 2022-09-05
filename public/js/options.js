@@ -54,7 +54,7 @@ websiteInput.addEventListener("keyup", (event) => {
 });
 
 whitelistMode.addEventListener('change', () => {
-    chrome.storage.sync.set({ isWhitelist: this.checked });
+    chrome.storage.sync.set({ isWhitelist: whitelistMode.checked });
 });
 
 document.getElementById('submitAnswerBtn').addEventListener('click', () => {
