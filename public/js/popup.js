@@ -15,7 +15,7 @@ if (targetURL.protocol != "http:" && targetURL.protocol != "https:") {
         blockSiteBtn.innerText = "This site is already blocked";
         blockSiteBtn.disabled = true;
     } else {
-        blockSiteBtn.innerText = `Block ${targetURL.hostname}`;
+        blockSiteBtn.innerHTML = `Block <span class="text-lowercase">${targetURL.hostname}</span>`;
         blockSiteBtn.addEventListener("click", () => {
             blocklist.push(targetURL.hostname);
             chrome.storage.sync.set({ blocklist: blocklist });
