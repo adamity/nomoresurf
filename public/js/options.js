@@ -18,6 +18,9 @@ const answerInput = document.getElementById('answerInput');
 const blocklist = await getBlocklist();
 const isWhitelist = await getIsWhitelist();
 
+const alertSuccessMessage = document.getElementById('alertSuccessMessage');
+const alertWarningMessage = document.getElementById('alertWarningMessage');
+
 let correctAnswer = null;
 let progress = 0;
 
@@ -33,14 +36,31 @@ addWebsiteBtn.addEventListener("click", async () => {
     url = await validateURL(url);
 
     if (blocklist.includes(url)) {
-        alert("This site is already blocked!");
+        alertWarningMessage.innerText = "This site is already blocked!";
+        alertWarningMessage.classList.add("show");
+
+        setTimeout(() => {
+            alertWarningMessage.classList.remove("show");
+        }, 3000);
     } else if (!url) {
-        alert("Invalid URL");
+        alertWarningMessage.innerText = "Invalid URL";
+        alertWarningMessage.classList.add("show");
+
+        setTimeout(() => {
+            alertWarningMessage.classList.remove("show");
+        }, 3000);
     } else {
         blocklist.push(url);
         chrome.storage.sync.set({ blocklist: blocklist });
         renderBlocklist(blocklist);
         websiteInput.value = "";
+
+        alertSuccessMessage.innerText = "Site added to blocklist!";
+        alertSuccessMessage.classList.add("show");
+
+        setTimeout(() => {
+            alertSuccessMessage.classList.remove("show");
+        }, 3000);
     }
 
     addWebsiteBtn.disabled = false;
@@ -79,6 +99,13 @@ document.getElementById('confirmUnblockBtn').addEventListener('click', () => {
     let index = blocklist.indexOf(document.getElementById('selectedURL').value);
     blocklist.splice(index, 1);
     chrome.storage.sync.set({ blocklist: blocklist });
+
+    alertSuccessMessage.innerText = "Site removed from blocklist!";
+    alertSuccessMessage.classList.add("show");
+
+    setTimeout(() => {
+        alertSuccessMessage.classList.remove("show");
+    }, 3000);
 
     resetProgress();
     renderBlocklist(blocklist);
