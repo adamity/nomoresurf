@@ -22,6 +22,21 @@ export function getActiveTab() {
     });
 }
 
+export function validateURL(url) {
+    return new Promise(resolve => {
+        fetch(`http://${url}`).then(response => {
+            if (response.status === 200) {
+                url = new URL(response.url);
+                resolve(url.hostname);
+            } else {
+                resolve(false);
+            }
+        }).catch(error => {
+            resolve(false);
+        });
+    });
+}
+
 export function generateMathProblem(difficulty = null) {
     let problem = "";
     let answer = 0;
@@ -49,12 +64,4 @@ export function generateMathProblem(difficulty = null) {
 
     problem = `${num1} ${operator} ${num2}`;
     return [problem, answer];
-}
-
-export function validateURL(url) {
-    return new Promise(resolve => {
-        let link = document.createElement('a');
-        link.href = url;
-        resolve(link.hostname);
-    });
 }
