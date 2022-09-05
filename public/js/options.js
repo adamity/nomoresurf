@@ -1,65 +1,105 @@
-import { generateMathProblem } from "./controller.js";
+import { getBlocklist, getIsWhitelist, generateMathProblem, validateURL } from "./controller.js";
 
-const addWebsiteBtn = document.getElementById("addWebsiteBtn");
-const websiteInput = document.getElementById("websiteInput");
 const whitelistMode = document.getElementById('whitelistMode');
-const blocklistContainer = document.getElementById('blocklistContainer');
-const blocklistEmpty = document.getElementById('blocklistEmpty');
-const unblockModal = document.getElementById('unblockModal');
+const unblockQuestionObject = document.getElementsByClassName('unblockQuestionObject');
+const confirmUnblockObject = document.getElementsByClassName('confirmUnblockObject');
+const unblockQuestion = document.getElementById('unblockQuestion');
 const answerInput = document.getElementById('answerInput');
-const submitAnswerBtn = document.getElementById('submitAnswerBtn');
-const deleteBtn = document.getElementsByClassName('btn-delete');
 
-var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+for (let i = 0; i < unblockQuestionObject.length; i++) {
+    unblockQuestionObject[i].classList.add("d-none");
+}
+for (let i = 0; i < confirmUnblockObject.length; i++) {
+    confirmUnblockObject[i].classList.add("d-none");
+}
+
+const deleteBtn = document.getElementsByClassName('btn-delete');
+const blocklist = await getBlocklist();
+const isWhitelist = await getIsWhitelist();
+
+let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)
 })
 
-// LAST HERE, WORKING ON THIS
+if (isWhitelist) whitelistMode.checked = true;
+renderBlocklist(blocklist);
 
-addWebsiteBtn.addEventListener("click", async () => {
-    let blocklist = await getBlocklist();
-    let input = document.getElementById("websiteInput").value;
-    if (input.includes("://")) input = input.split("://")[1];
+document.getElementById("addWebsiteBtn").addEventListener("click", async () => {
+    let websiteInput = document.getElementById("websiteInput");
+    let url = websiteInput.value;
+    if (url.includes("://")) url = url.split("://")[1];
+    url = await validateURL(url);
 
-    await fetch(`http://${input}`).then(response => {
-        if (response.status === 200) {
-            console.log(response);
-            let url = new URL(response.url);
-            console.log(url.hostname);
-
-            if (!blocklist.includes(url.hostname)) {
-                blocklist.push(url.hostname);
-                chrome.storage.sync.set({ blocklist: blocklist });
-                location.reload();
-            }
+    if (url) {
+        if (blocklist.includes(url)) {
+            alert("This website is already blocked!");
         } else {
-            alert("Invalid URL");
-            console.log("error");
+            blocklist.push(url);
+            chrome.storage.sync.set({ blocklist: blocklist });
+            renderBlocklist(blocklist);
+            websiteInput.value = "";
         }
-    }).catch(error => {
+    } else {
         alert("Invalid URL");
-        console.log(error);
-    });
+    }
 });
 
-function getBlocklist() {
-    return new Promise(resolve => {
-        chrome.storage.sync.get(['blocklist'], function(result) {
-            resolve(result.blocklist);
-        });
-    });
-}
+let toUnblock = "";
+let correctAnswer = null;
+let progress = 0;
+let percent = 0;
+let bar = document.querySelector(".progress-bar");
 
-chrome.storage.sync.get('blocklist', function(data) {
-    let blocklist = data.blocklist;
+document.getElementById('submitAnswerBtn').addEventListener('click', () => {
+    let answer = answerInput.value;
+
+    if (answer == correctAnswer) {
+        correctAnswer = setUnblockQuestion();
+        answerInput.value = "";
+        progress++;
+
+        if (progress > 2) {
+            for (let i = 0; i < unblockQuestionObject.length; i++) {
+                unblockQuestionObject[i].classList.add("d-none");
+            }
+            for (let i = 0; i < confirmUnblockObject.length; i++) {
+                confirmUnblockObject[i].classList.remove("d-none");
+            }
+        }
+
+        makeProgress(progress);
+    } else {
+        unblockQuestion.style.animation = "shake 0.3s 1";
+        setTimeout(() => {
+            unblockQuestion.style.animation = "";
+        }, 300);
+    }
+});
+
+document.getElementById('confirmUnblockBtn').addEventListener('click', () => {
+    let index = blocklist.indexOf(toUnblock);
+    answerInput.value = "";
+    progress = 0;
+    blocklist.splice(index, 1);
+    chrome.storage.sync.set({ blocklist: blocklist });
+    renderBlocklist(blocklist);
+});
+
+whitelistMode.addEventListener('change', () => {
+    chrome.storage.sync.set({ isWhitelist: this.checked });
+});
+
+function renderBlocklist(blocklist) {
+    let blocklistContainer = document.getElementById('blocklistContainer');
+    let blocklistEmpty = document.getElementById('blocklistEmpty');
     let html = "";
 
     for (let i = 0; i < blocklist.length; i++) {
         html += `<div class="d-flex align-items-center user-select-none">`;
         html += `<img src="http://www.google.com/s2/favicons?domain=${blocklist[i]}" class="img-thumbnail" alt="..." style="height: 30px;">`;
         html += `<p class="m-0 ms-2">${blocklist[i]}</p>`;
-        html += `<button type="button" class="btn btn-sm btn-light border btn-delete ms-auto" data-item="${blocklist[i]}"><i class="bi bi-trash3"></i></button>`;
+        html += `<button type="button" class="btn btn-sm btn-light border btn-delete ms-auto" data-item="${blocklist[i]}" data-bs-toggle="modal" data-bs-target="#unblockModal"><i class="bi bi-trash3"></i></button>`;
         html += `</div>`;
         html += `<hr>`;
     }
@@ -75,24 +115,32 @@ chrome.storage.sync.get('blocklist', function(data) {
 
     for (let i = 0; i < deleteBtn.length; i++) {
         deleteBtn[i].addEventListener('click', function() {
+            for (let i = 0; i < unblockQuestionObject.length; i++) {
+                unblockQuestionObject[i].classList.remove("d-none");
+            }
+            for (let i = 0; i < confirmUnblockObject.length; i++) {
+                confirmUnblockObject[i].classList.add("d-none");
+            }
+
             let item = this.getAttribute('data-item');
-            chrome.storage.sync.get('blocklist', function(data) {
-                let blocklist = data.blocklist;
-                let index = blocklist.indexOf(item);
-                blocklist.splice(index, 1);
-                chrome.storage.sync.set({ blocklist: blocklist });
-                location.reload();
-            });
+            toUnblock = item;
+            document.getElementById('toUnblockURL').innerText = item;
+            answerInput.value = "";
+            progress = 0;
+            makeProgress(progress);
+            correctAnswer = setUnblockQuestion();
         });
     }
-});
+}
 
-chrome.storage.sync.get('isWhitelist', function(data) {
-    if (data.isWhitelist) {
-        whitelistMode.checked = true;
-    }
-});
+function makeProgress(progress) {
+    percent = progress * 33.3333333333;
+    bar.style.width = percent + "%";
+}
 
-whitelistMode.addEventListener('change', function() {
-    chrome.storage.sync.set({ isWhitelist: this.checked });
-});
+function setUnblockQuestion() {
+    let problem = generateMathProblem(2);
+    unblockQuestion.innerText = problem[0];
+    console.log(problem[1]);
+    return problem[1];
+}
