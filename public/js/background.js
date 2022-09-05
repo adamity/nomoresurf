@@ -1,4 +1,4 @@
-import { getBlocklist, getIsWhitelist } from "./controller.js";
+import { getBlocklist, getIsWhitelist } from "./controller.min.js";
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.storage.sync.set({ blocklist: [] });

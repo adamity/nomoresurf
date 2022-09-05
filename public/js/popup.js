@@ -1,4 +1,4 @@
-import { getBlocklist, getActiveTab } from "./controller.js";
+import { getBlocklist, getActiveTab } from "./controller.min.js";
 
 const blockSiteBtn = document.getElementById('blockSiteBtn');
 const editBlocklistBtn = document.getElementById('editBlocklistBtn');

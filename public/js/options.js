@@ -1,4 +1,4 @@
-import { getBlocklist, getIsWhitelist, generateMathProblem, validateURL } from "./controller.js";
+import { getBlocklist, getIsWhitelist, generateMathProblem, validateURL } from "./controller.min.js";
 
 let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
