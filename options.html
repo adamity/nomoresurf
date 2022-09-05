@@ -55,7 +55,7 @@
 
             <div class="card">
                 <div id="blocklistContainer" class="card-body overflow-auto scroller height-50vh"></div>
-                <div id="blocklistEmpty" class="card-body overflow-auto scroller height-50vh d-none user-select-none">
+                <div id="blocklistEmpty" class="card-body overflow-auto scroller height-50vh user-select-none">
                     <div class="d-flex flex-column justify-content-center align-items-center h-100 text-muted">
                         <img src="./public/images/box.png" alt="Empty box" class="mb-2 opacity-75 height-50">
                         <p class="mb-0 fw-normal">No blocked websites</p>
@@ -95,10 +95,11 @@
 
                         <div class="confirmUnblockObject">
                             <div class="d-flex flex-column align-items-center">
+                                <input id="selectedURL" type="text" hidden>
                                 <img src="./public/images/question.png" alt="Confirm" class="mb-2 opacity-75 height-50">
                                 <p class="mb-0 fw-normal">Are you sure?</p>
                                 <p class="mb-0 fw-light">
-                                    Do you really want to unblock <span id="toUnblockURL"></span>
+                                    Do you really want to unblock <span id="selectedURLText"></span>
                                 </p>
                             </div>
                         </div>
