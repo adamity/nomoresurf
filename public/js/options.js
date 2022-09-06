@@ -7,7 +7,6 @@ let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 
 const addWebsiteBtn = document.getElementById('addWebsiteBtn');
 const websiteInput = document.getElementById("websiteInput");
-const whitelistMode = document.getElementById('whitelistMode');
 
 const unblockQuestionObject = document.getElementsByClassName('unblockQuestionObject');
 const confirmUnblockObject = document.getElementsByClassName('confirmUnblockObject');
@@ -69,10 +68,6 @@ websiteInput.addEventListener("keyup", (event) => {
         event.preventDefault();
         addWebsiteBtn.click();
     }
-});
-
-whitelistMode.addEventListener('change', () => {
-    chrome.storage.sync.set({ isWhitelist: whitelistMode.checked });
 });
 
 document.getElementById('submitAnswerBtn').addEventListener('click', () => {
@@ -178,7 +173,6 @@ async function init() {
     blocklist = await getBlocklist();
     isWhitelist = await getIsWhitelist();
 
-    if (isWhitelist) whitelistMode.checked = true;
     renderBlocklist(blocklist);
     toggleObject(confirmUnblockObject, unblockQuestionObject, "class");
 }
