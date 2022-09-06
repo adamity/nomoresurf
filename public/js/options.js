@@ -15,18 +15,16 @@ const confirmUnblockObject = document.getElementsByClassName('confirmUnblockObje
 const unblockQuestion = document.getElementById('unblockQuestion');
 const answerInput = document.getElementById('answerInput');
 
-const blocklist = await getBlocklist();
-const isWhitelist = await getIsWhitelist();
-
 const alertSuccessMessage = document.getElementById('alertSuccessMessage');
 const alertWarningMessage = document.getElementById('alertWarningMessage');
+
+let blocklist = [];
+let isWhitelist = false;
 
 let correctAnswer = null;
 let progress = 0;
 
-if (isWhitelist) whitelistMode.checked = true;
-renderBlocklist(blocklist);
-toggleObject(confirmUnblockObject, unblockQuestionObject, "class");
+init();
 
 addWebsiteBtn.addEventListener("click", async () => {
     addWebsiteBtn.disabled = true;
@@ -174,4 +172,13 @@ function toggleObject(toHide, toShow, type) {
             toShow[i].classList.remove("d-none");
         }
     }
+}
+
+async function init() {
+    blocklist = await getBlocklist();
+    isWhitelist = await getIsWhitelist();
+
+    if (isWhitelist) whitelistMode.checked = true;
+    renderBlocklist(blocklist);
+    toggleObject(confirmUnblockObject, unblockQuestionObject, "class");
 }
