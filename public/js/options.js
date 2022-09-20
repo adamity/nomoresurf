@@ -1,4 +1,4 @@
-import { getBlocklist, getIsWhitelist, generateMathProblem, validateURL } from "./controller.min.js";
+import { getBlocklist, getIsWhitelist, generateMathProblem, validateURL } from "./controller.js";
 
 let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -10,6 +10,7 @@ const websiteInput = document.getElementById("websiteInput");
 
 const unblockQuestionObject = document.getElementsByClassName('unblockQuestionObject');
 const confirmUnblockObject = document.getElementsByClassName('confirmUnblockObject');
+const confirmUnblockBtn = document.getElementById('confirmUnblockBtn');
 
 const unblockQuestion = document.getElementById('unblockQuestion');
 const answerInput = document.getElementById('answerInput');
@@ -77,6 +78,19 @@ document.getElementById('submitAnswerBtn').addEventListener('click', () => {
 
         if (progress > 2) {
             toggleObject(unblockQuestionObject, confirmUnblockObject, "class");
+            confirmUnblockBtn.disabled = true;
+            confirmUnblockBtn.innerText = "Unblock (5)";
+
+            let countdown = 5;
+            let countdownInterval = setInterval(() => {
+                confirmUnblockBtn.innerText = `Unblock (${--countdown})`;
+            }, 1000);
+
+            setTimeout(() => {
+                clearInterval(countdownInterval);
+                confirmUnblockBtn.disabled = false;
+                confirmUnblockBtn.innerText = "Unblock";
+            }, 5000);
         } else {
             correctAnswer = setUnblockQuestion();
         }
@@ -88,10 +102,12 @@ document.getElementById('submitAnswerBtn').addEventListener('click', () => {
     }
 });
 
-document.getElementById('confirmUnblockBtn').addEventListener('click', () => {
+confirmUnblockBtn.addEventListener('click', () => {
     let index = blocklist.indexOf(document.getElementById('selectedURL').value);
     blocklist.splice(index, 1);
+
     chrome.storage.sync.set({ blocklist: blocklist });
+    confirmUnblockBtn.disabled = true;
 
     alertSuccessMessage.innerText = "Site removed from blocklist!";
     alertSuccessMessage.classList.add("show");
@@ -172,6 +188,7 @@ function toggleObject(toHide, toShow, type) {
 async function init() {
     blocklist = await getBlocklist();
     isWhitelist = await getIsWhitelist();
+    confirmUnblockBtn.disabled = true;
 
     renderBlocklist(blocklist);
     toggleObject(confirmUnblockObject, unblockQuestionObject, "class");
