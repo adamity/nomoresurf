@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Nomoresurf: No more time-wasting websites!",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "Block time-wasting websites, answer math questions to unlock them. Make it harder to procrastinate!",
     "options_page": "options.html",
     "background": {
