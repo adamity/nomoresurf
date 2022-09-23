@@ -1,8 +1,17 @@
 import { getBlocklist, getIsWhitelist } from "./controller.min.js";
 
 chrome.runtime.onInstalled.addListener(() => {
-    chrome.storage.sync.set({ blocklist: [] });
-    chrome.storage.sync.set({ isWhitelist: false });
+    chrome.storage.sync.get(['blocklist'], function(result) {
+        if (result.blocklist === undefined) {
+            chrome.storage.sync.set({ blocklist: [] });
+        }
+    });
+
+    chrome.storage.sync.get(['isWhitelist'], function(result) {
+        if (result.whitelist === undefined) {
+            chrome.storage.sync.set({ isWhitelist: false });
+        }
+    });
 });
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
