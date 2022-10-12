@@ -7,16 +7,26 @@ let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 
 const addWebsiteBtn = document.getElementById('addWebsiteBtn');
 const websiteInput = document.getElementById("websiteInput");
-
+const whitelistMode = document.getElementById('whitelistMode');
 const unblockQuestionObject = document.getElementsByClassName('unblockQuestionObject');
 const confirmUnblockObject = document.getElementsByClassName('confirmUnblockObject');
-const confirmUnblockBtn = document.getElementById('confirmUnblockBtn');
 
+const confirmUnblockBtn = document.getElementById('confirmUnblockBtn');
 const unblockQuestion = document.getElementById('unblockQuestion');
 const answerInput = document.getElementById('answerInput');
+const isToggleWhitelist = document.getElementById('isToggleWhitelist');
+const whitelistState = document.getElementById('whitelistState');
 
-const alertSuccessMessage = document.getElementById('alertSuccessMessage');
-const alertWarningMessage = document.getElementById('alertWarningMessage');
+const unblockModal = new bootstrap.Modal(document.getElementById('unblockModal'));
+const alertMessage = document.getElementById('alertMessage');
+const unblockModalText = document.getElementById('unblockModalText');
+const confirmText = document.getElementById('confirmText');
+
+const submitAnswerBtn = document.getElementById('submitAnswerBtn');
+const listText = document.getElementById('listText');
+const addedSiteHead = document.getElementById('addedSiteHead');
+const addedSiteLead = document.getElementById('addedSiteLead');
+const selectedURL = document.getElementById('selectedURL');
 
 let blocklist = [];
 let isWhitelist = false;
@@ -28,39 +38,9 @@ init();
 
 addWebsiteBtn.addEventListener("click", async () => {
     addWebsiteBtn.disabled = true;
+    let response = updateWebsiteList(websiteInput.value);
 
-    let url = websiteInput.value;
-    if (url.includes("://")) url = url.split("://")[1];
-    url = await validateURL(url);
-
-    if (blocklist.includes(url)) {
-        alertWarningMessage.innerText = "This site is already blocked!";
-        alertWarningMessage.classList.add("show");
-
-        setTimeout(() => {
-            alertWarningMessage.classList.remove("show");
-        }, 3000);
-    } else if (!url) {
-        alertWarningMessage.innerText = "Invalid URL";
-        alertWarningMessage.classList.add("show");
-
-        setTimeout(() => {
-            alertWarningMessage.classList.remove("show");
-        }, 3000);
-    } else {
-        blocklist.push(url);
-        chrome.storage.sync.set({ blocklist: blocklist });
-        renderBlocklist(blocklist);
-        websiteInput.value = "";
-
-        alertSuccessMessage.innerText = "Site added to blocklist!";
-        alertSuccessMessage.classList.add("show");
-
-        setTimeout(() => {
-            alertSuccessMessage.classList.remove("show");
-        }, 3000);
-    }
-
+    (await response).success ? showAlertMessage((await response).message) : showAlertMessage((await response).message, false);
     addWebsiteBtn.disabled = false;
 });
 
@@ -71,28 +51,44 @@ websiteInput.addEventListener("keyup", (event) => {
     }
 });
 
-document.getElementById('submitAnswerBtn').addEventListener('click', () => {
+whitelistMode.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    isToggleWhitelist.checked = true;
+    whitelistState.checked = whitelistMode.checked;
+
+    unblockModalText.innerText = "Whitelist Mode";
+    confirmText.innerText = `Do you really want to ${whitelistMode.checked ? 'enable' : 'disable'} whitelist mode?`;
+
+    toggleVisibility(confirmUnblockObject, unblockQuestionObject, "class");
+    resetProgress();
+    setUnblockQuestion();
+
+    unblockModal.show();
+});
+
+submitAnswerBtn.addEventListener('click', () => {
     if (answerInput.value == correctAnswer) {
         answerInput.value = "";
         updateProgress(++progress);
 
         if (progress > 2) {
-            toggleObject(unblockQuestionObject, confirmUnblockObject, "class");
+            toggleVisibility(unblockQuestionObject, confirmUnblockObject, "class");
             confirmUnblockBtn.disabled = true;
-            confirmUnblockBtn.innerText = "Unblock (5)";
+            confirmUnblockBtn.innerText = "Confirm (5)";
 
             let countdown = 5;
             let countdownInterval = setInterval(() => {
-                confirmUnblockBtn.innerText = `Unblock (${--countdown})`;
+                confirmUnblockBtn.innerText = `Confirm (${--countdown})`;
             }, 1000);
 
             setTimeout(() => {
                 clearInterval(countdownInterval);
                 confirmUnblockBtn.disabled = false;
-                confirmUnblockBtn.innerText = "Unblock";
+                confirmUnblockBtn.innerText = "Confirm";
             }, 5000);
         } else {
-            correctAnswer = setUnblockQuestion();
+            setUnblockQuestion();
         }
     } else {
         unblockQuestion.style.animation = "shake 0.3s 1";
@@ -102,25 +98,15 @@ document.getElementById('submitAnswerBtn').addEventListener('click', () => {
     }
 });
 
-confirmUnblockBtn.addEventListener('click', () => {
-    let index = blocklist.indexOf(document.getElementById('selectedURL').value);
-    blocklist.splice(index, 1);
-
-    chrome.storage.sync.set({ blocklist: blocklist });
+confirmUnblockBtn.addEventListener('click', async () => {
+    let response = isToggleWhitelist.checked ? toggleWhitelist(whitelistState.checked) : updateWebsiteList(selectedURL.value, false);
     confirmUnblockBtn.disabled = true;
 
-    alertSuccessMessage.innerText = "Site removed from blocklist!";
-    alertSuccessMessage.classList.add("show");
-
-    setTimeout(() => {
-        alertSuccessMessage.classList.remove("show");
-    }, 3000);
-
+    showAlertMessage((await response).message);
     resetProgress();
-    renderBlocklist(blocklist);
 });
 
-function renderBlocklist(blocklist) {
+function renderView(blocklist, isWhitelist) {
     let blocklistContainer = document.getElementById('blocklistContainer');
     let blocklistEmpty = document.getElementById('blocklistEmpty');
     let deleteBtn = document.getElementsByClassName('btn-delete');
@@ -130,26 +116,113 @@ function renderBlocklist(blocklist) {
         html += `<div class="d-flex align-items-center user-select-none">`;
         html += `<img src="http://www.google.com/s2/favicons?domain=${blocklist[i]}" class="img-thumbnail" alt="..." style="height: 30px;">`;
         html += `<p class="m-0 ms-2">${blocklist[i]}</p>`;
-        html += `<button type="button" class="btn btn-sm btn-light border btn-delete ms-auto" data-item="${blocklist[i]}" data-bs-toggle="modal" data-bs-target="#unblockModal"><i class="bi bi-trash3"></i></button>`;
+        html += `<button type="button" class="btn btn-sm btn-light border btn-delete ms-auto" data-item="${blocklist[i]}"><i class="bi bi-trash3"></i></button>`;
         html += `</div>`;
         html += `<hr>`;
     }
 
     blocklistContainer.innerHTML = html;
-    html ? toggleObject(blocklistEmpty, blocklistContainer, "id") : toggleObject(blocklistContainer, blocklistEmpty, "id");
+    html ? toggleVisibility(blocklistEmpty, blocklistContainer, "id") : toggleVisibility(blocklistContainer, blocklistEmpty, "id");
 
     for (let i = 0; i < deleteBtn.length; i++) {
-        deleteBtn[i].addEventListener('click', function() {
+        deleteBtn[i].addEventListener('click', async function() {
             let item = this.getAttribute('data-item');
 
-            document.getElementById('selectedURL').value = item;
-            document.getElementById('selectedURLText').innerText = item;
+            if (isWhitelist) {
+                let response = updateWebsiteList(item, false);
+                confirmUnblockBtn.disabled = true;
+                showAlertMessage((await response).message);
+            } else {
+                isToggleWhitelist.checked = false;
+                selectedURL.value = item;
 
-            toggleObject(confirmUnblockObject, unblockQuestionObject, "class");
-            resetProgress();
-            correctAnswer = setUnblockQuestion();
+                unblockModalText.innerText = "Unblock Website";
+                confirmText.innerText = `Do you really want to unblock ${item}`;
+
+                toggleVisibility(confirmUnblockObject, unblockQuestionObject, "class");
+                resetProgress();
+                setUnblockQuestion();
+
+                unblockModal.show();
+            }
         });
     }
+
+    if (isWhitelist) {
+        whitelistMode.checked = true;
+        listText.innerText = "Whitelist";
+        addedSiteHead.innerText = "No whitelisted websites";
+        addedSiteLead.innerText = "Add websites to the whitelist to allow access.";
+    } else {
+        listText.innerText = "Block List";
+        addedSiteHead.innerText = "No blocked websites";
+        addedSiteLead.innerText = "Add websites to the blocklist to prevent access.";
+    }
+}
+
+async function toggleWhitelist(state) {
+    let response = {
+        success: true,
+        message: ""
+    };
+
+    chrome.storage.sync.set({ isWhitelist: state });
+    whitelistMode.checked = state;
+    isWhitelist = state;
+
+    response.message = `Whitelist mode ${state ? 'enabled' : 'disabled'}!`;
+    renderView(blocklist, isWhitelist);
+
+    return response;
+}
+
+async function updateWebsiteList(url, isAdd = true) {
+    let response = {
+        success: false,
+        message: ""
+    }
+
+    if (isAdd) {
+        if (url.includes("://")) url = url.split("://")[1];
+        url = await validateURL(url);
+
+        if (blocklist.includes(url)) {
+            response.message = `This site is already ${isWhitelist ? 'whitelisted' : 'blocked'}!`;
+        } else if (!url) {
+            response.message = "Invalid URL";
+        } else {
+            blocklist.push(url);
+
+            chrome.storage.sync.set({ blocklist: blocklist });
+            websiteInput.value = "";
+
+            response.success = true;
+            response.message = `Site added to ${isWhitelist ? 'whitelist' : 'blocklist'}!`;
+        }
+    } else {
+        let index = blocklist.indexOf(url);
+        blocklist.splice(index, 1);
+
+        response.success = true;
+        response.message = `Site removed from ${isWhitelist ? 'whitelist' : 'blocklist'}!`;
+    }
+
+    chrome.storage.sync.set({ blocklist: blocklist });
+    renderView(blocklist, isWhitelist);
+
+    return response;
+}
+
+function showAlertMessage(message, success = true) {
+    alertMessage.classList.remove("alert-success", "alert-warning");
+    alertMessage.classList.add(success ? "alert-success" : "alert-warning");
+
+    alertMessage.innerText = message;
+    alertMessage.classList.add("show");
+
+    setTimeout(() => {
+        alertMessage.classList.remove("show");
+    }, 3000);
 }
 
 function updateProgress(progress) {
@@ -167,11 +240,10 @@ function resetProgress() {
 function setUnblockQuestion() {
     let problem = generateMathProblem(2);
     unblockQuestion.innerText = problem[0];
-    console.log("Answer: " + problem[1]);
-    return problem[1];
+    correctAnswer = problem[1];
 }
 
-function toggleObject(toHide, toShow, type) {
+function toggleVisibility(toHide, toShow, type) {
     if (type == "id") {
         toHide.style.display = "none";
         toShow.style.display = "block";
@@ -190,6 +262,6 @@ async function init() {
     isWhitelist = await getIsWhitelist();
     confirmUnblockBtn.disabled = true;
 
-    renderBlocklist(blocklist);
-    toggleObject(confirmUnblockObject, unblockQuestionObject, "class");
+    renderView(blocklist, isWhitelist);
+    toggleVisibility(confirmUnblockObject, unblockQuestionObject, "class");
 }

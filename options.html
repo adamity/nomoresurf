@@ -29,8 +29,7 @@
     </nav>
 
     <div class="container max-width-680">
-        <div id="alertSuccessMessage" class="alert alert-success fixed-top d-block mx-auto w-50 text-center fade" role="alert"></div>
-        <div id="alertWarningMessage" class="alert alert-warning fixed-top d-block mx-auto w-50 text-center fade" role="alert"></div>
+        <div id="alertMessage" class="alert fixed-top d-block mx-auto w-50 text-center fade" role="alert"></div>
 
         <div class="mb-5">
             <label for="websiteInput" class="form-label lead">Add Website</label>
@@ -45,15 +44,23 @@
         </div>
 
         <div class="mb-5">
-            <p class="mb-2 lead">Block List</p>
+            <div class="d-flex justify-content-between">
+                <p id="listText" class="mb-2 lead"></p>
+                <div class="form-check form-switch">
+                    <input id="whitelistMode" type="checkbox" class="form-check-input">
+                    <label for="whitelistMode" class="form-check-label fw-light user-select-none" data-bs-toggle="tooltip" data-bs-placement="right" title="Block all websites except those on your whitelist.">
+                        Whitelist Mode
+                    </label>
+                </div>
+            </div>
 
             <div class="card">
                 <div id="blocklistContainer" class="card-body overflow-auto scroller height-50vh"></div>
                 <div id="blocklistEmpty" class="card-body overflow-auto scroller height-50vh user-select-none">
-                    <div class="d-flex flex-column justify-content-center align-items-center h-100 text-muted">
+                    <div class="d-flex flex-column justify-content-center align-items-center h-100 text-muted text-center">
                         <img src="./public/images/box.png" alt="Empty box" class="mb-2 opacity-75 height-50">
-                        <p class="mb-0 fw-normal">No blocked websites</p>
-                        <p class="mb-0 fw-light">You will see the website you blocked here.</p>
+                        <p id="addedSiteHead" class="mb-0 fw-normal"></p>
+                        <p id="addedSiteLead" class="mb-0 fw-light"></p>
                     </div>
                 </div>
             </div>
@@ -64,7 +71,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <p class="mb-0 lead">Unblock Website</p>
+                    <p id="unblockModalText" class="mb-0 lead"></p>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -89,12 +96,13 @@
 
                         <div class="confirmUnblockObject">
                             <div class="d-flex flex-column align-items-center">
+                                <input id="isToggleWhitelist" type="checkbox" hidden>
+                                <input id="whitelistState" type="checkbox" hidden>
                                 <input id="selectedURL" type="text" hidden>
+
                                 <img src="./public/images/question.png" alt="Confirm" class="mb-2 opacity-75 height-50">
                                 <p class="mb-0 fw-normal">Are you sure?</p>
-                                <p class="mb-0 fw-light">
-                                    Do you really want to unblock <span id="selectedURLText"></span>
-                                </p>
+                                <p id="confirmText" class="mb-0 fw-light"></p>
                             </div>
                         </div>
 
@@ -107,7 +115,7 @@
                                 </div>
                                 <div>
                                     <button id="confirmUnblockBtn" type="button" class="btn btn-sm btn-dark rounded-pill px-3 ms-3" data-bs-dismiss="modal" aria-label="Unblock">
-                                        Unblock
+                                        Confirm
                                     </button>
                                 </div>
                             </div>
@@ -120,7 +128,7 @@
 
     <script src="./public/assets/bootstrap-5.2.0-dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="./public/assets/MDB5-STANDARD-UI-KIT-Free-5.0.0/js/mdb.min.js"></script>
-    <script src="./public/js/options.min.js" type="module"></script>
+    <script src="./public/js/options.js" type="module"></script>
 </body>
 
 </html>
