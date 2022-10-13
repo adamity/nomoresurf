@@ -1,11 +1,13 @@
-import { getBlocklist, getActiveTab } from "./controller.min.js";
+import { getBlocklist, getIsWhitelist, getActiveTab } from "./controller.min.js";
 
 const blockSiteBtn = document.getElementById('blockSiteBtn');
 const editBlocklistBtn = document.getElementById('editBlocklistBtn');
 
 let activeTab = null;
 let targetURL = null;
+
 let blocklist = [];
+let isWhitelist = false;
 
 init();
 
@@ -26,14 +28,20 @@ async function init() {
         blockSiteBtn.disabled = true;
     } else {
         blocklist = await getBlocklist();
+        isWhitelist = await getIsWhitelist();
 
-        if (blocklist.includes(targetURL.hostname)) {
+        if (blocklist.includes(targetURL.hostname) && !isWhitelist) {
             blockSiteBtn.innerText = "This site is already blocked";
             blockSiteBtn.disabled = true;
         } else {
             blockSiteBtn.innerHTML = `Block <span class="text-lowercase">${targetURL.hostname}</span>`;
             blockSiteBtn.addEventListener("click", () => {
-                blocklist.push(targetURL.hostname);
+                if (!isWhitelist) {
+                    blocklist.push(targetURL.hostname);
+                } else {
+                    let index = blocklist.indexOf(targetURL.hostname);
+                    blocklist.splice(index, 1);
+                }
                 chrome.storage.sync.set({ blocklist: blocklist });
                 window.close();
             });

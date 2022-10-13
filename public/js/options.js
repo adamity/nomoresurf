@@ -1,4 +1,4 @@
-import { getBlocklist, getIsWhitelist, generateMathProblem, validateURL } from "./controller.js";
+import { getBlocklist, getIsWhitelist, generateMathProblem, validateURL } from "./controller.min.js";
 
 let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -38,9 +38,24 @@ init();
 
 addWebsiteBtn.addEventListener("click", async () => {
     addWebsiteBtn.disabled = true;
-    let response = updateWebsiteList(websiteInput.value);
 
-    (await response).success ? showAlertMessage((await response).message) : showAlertMessage((await response).message, false);
+    if (isWhitelist) {
+        isToggleWhitelist.checked = false;
+        selectedURL.value = websiteInput.value;
+
+        unblockModalText.innerText = "Add to Whitelist";
+        confirmText.innerText = `Do you really want to add ${selectedURL.value} to the whitelist?`;
+
+        toggleVisibility(confirmUnblockObject, unblockQuestionObject, "class");
+        resetProgress();
+        setUnblockQuestion();
+
+        unblockModal.show();
+    } else {
+        let response = updateWebsiteList(websiteInput.value);
+        (await response).success ? showAlertMessage((await response).message) : showAlertMessage((await response).message, false);
+    }
+
     addWebsiteBtn.disabled = false;
 });
 
@@ -99,7 +114,14 @@ submitAnswerBtn.addEventListener('click', () => {
 });
 
 confirmUnblockBtn.addEventListener('click', async () => {
-    let response = isToggleWhitelist.checked ? toggleWhitelist(whitelistState.checked) : updateWebsiteList(selectedURL.value, false);
+    let response = {};
+
+    if (isToggleWhitelist.checked) {
+        response = toggleWhitelist(whitelistState.checked);
+    } else {
+        isWhitelist ? response = updateWebsiteList(selectedURL.value) : response = updateWebsiteList(selectedURL.value, false);
+    }
+
     confirmUnblockBtn.disabled = true;
 
     showAlertMessage((await response).message);

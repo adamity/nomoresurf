@@ -63,6 +63,5 @@ export function generateMathProblem(difficulty = null) {
     }
 
     problem = `${num1} ${operator} ${num2}`;
-    return [problem, 1]; // Temporary for testing
     return [problem, answer];
 }
