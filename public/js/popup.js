@@ -30,7 +30,7 @@ async function init() {
         blocklist = await getBlocklist();
         isWhitelist = await getIsWhitelist();
 
-        if (blocklist.includes(targetURL.hostname) && !isWhitelist) {
+        if (blocklist.includes(targetURL.hostname) && !isWhitelist || !blocklist.includes(targetURL.hostname) && isWhitelist) {
             blockSiteBtn.innerText = "This site is already blocked";
             blockSiteBtn.disabled = true;
         } else {
