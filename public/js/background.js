@@ -1,4 +1,8 @@
 import { getBlocklist, getIsWhitelist } from "./controller.min.js";
+import { ExtPay } from "../assets/ExtPay/ExtPay.min.js";
+
+const extpay = ExtPay('nomoresurf');
+extpay.startBackground();
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.storage.sync.get(['blocklist'], function(result) {
