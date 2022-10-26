@@ -6,61 +6,61 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="./public/images/nomoresurf.ico">
-    <title>Nomoresurf</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap">    
     <link rel="stylesheet" href="./public/assets/bootstrap-5.2.0-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="./public/assets/MDB5-STANDARD-UI-KIT-Free-5.0.0/css/mdb.min.css">
     <link rel="stylesheet" href="./public/css/custom.min.css">
+    <title>Nomoresurf</title>
 </head>
 
-<body class="vh-100">
-    <nav class="navbar navbar-light border-bottom mb-5">
+<body>
+    <nav class="navbar navbar-light fixed-lg-top">
         <div class="container">
-            <span class="navbar-brand mb-0 h1">
-                <img src="./public/images/nomoresurf_full.png" alt="" class="d-inline-block align-text-top height-25">
+            <span class="navbar-brand">
+                <img src="./public/images/nomoresurf_full.png" alt="nomoresurf" height="25">
             </span>
 
-            <a href="https://www.buymeacoffee.com/consistentlad" target="_blank" class="text-decoration-none">
-                <img src="./public/images/bmc-full-logo-no-background.png" alt="Buy me a coffee." class="height-25">
-            </a>
+            <button id="pricingBtn" type="button" class="btn btn-sm btn-danger rounded-pill px-3 d-none" data-bs-toggle="modal" data-bs-target="#pricingModal">
+                Upgrade to Pro
+            </button>
         </div>
     </nav>
 
-    <div class="container max-width-680">
+    <div class="container vh-lg-100 max-width-680">
         <div id="alertMessage" class="alert fixed-top d-block mx-auto w-50 text-center fade" role="alert"></div>
 
-        <div class="mb-5">
-            <label for="websiteInput" class="form-label lead">Add Website</label>
-            <div class="d-flex align-items-center">
-                <input id="websiteInput" type="text" class="form-control" placeholder="Enter a website address">
-                <div>
+        <div id="main" class="d-flex flex-column justify-content-center h-100">
+            <div class="mb-5">
+                <label for="websiteInput" class="form-label lead">Add Website</label>
+                <div class="d-flex align-items-center">
+                    <input id="websiteInput" type="text" class="form-control" placeholder="Enter a website address">
                     <button id="addWebsiteBtn" type="button" class="btn btn-sm btn-dark rounded-pill px-3 ms-3">
                         <i class="bi bi-plus-lg"></i>
                     </button>
                 </div>
             </div>
-        </div>
 
-        <div class="mb-5">
-            <div class="d-flex justify-content-between">
-                <p id="listText" class="mb-2 lead"></p>
-                <div class="form-check form-switch">
-                    <input id="whitelistMode" type="checkbox" class="form-check-input">
-                    <label for="whitelistMode" class="form-check-label fw-light user-select-none" data-bs-toggle="tooltip" data-bs-placement="right" title="Block all websites except those on your whitelist.">
-                        Whitelist Mode
-                    </label>
+            <div class="mb-5">
+                <div class="d-flex justify-content-between">
+                    <p id="listText" class="mb-2 lead"></p>
+                    <div class="form-check form-switch">
+                        <input id="whitelistMode" type="checkbox" class="form-check-input">
+                        <label for="whitelistMode" class="form-check-label fw-light user-select-none" data-bs-toggle="tooltip" data-bs-placement="right" title="Block all websites except those on your whitelist.">
+                            Whitelist Mode
+                        </label>
+                    </div>
                 </div>
-            </div>
 
-            <div class="card">
-                <div id="blocklistContainer" class="card-body overflow-auto scroller height-50vh"></div>
-                <div id="blocklistEmpty" class="card-body overflow-auto scroller height-50vh user-select-none">
-                    <div class="d-flex flex-column justify-content-center align-items-center h-100 text-muted text-center">
-                        <img src="./public/images/box.png" alt="Empty box" class="mb-2 opacity-75 height-50">
-                        <p id="addedSiteHead" class="mb-0 fw-normal"></p>
-                        <p id="addedSiteLead" class="mb-0 fw-light"></p>
+                <div class="card">
+                    <div id="blocklistContainer" class="card-body overflow-auto scroller height-50vh"></div>
+                    <div id="blocklistEmpty" class="card-body overflow-auto scroller height-50vh user-select-none">
+                        <div class="d-flex flex-column justify-content-center align-items-center h-100 text-muted text-center">
+                            <img src="./public/images/box.png" alt="Empty box" class="mb-2 opacity-75 height-50">
+                            <p id="addedSiteHead" class="mb-0 fw-normal"></p>
+                            <p id="addedSiteLead" class="mb-0 fw-light"></p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -126,9 +126,69 @@
         </div>
     </div>
 
+    <div class="modal fade" id="pricingModal" tabindex="-1" aria-labelledby="pricingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <div class="container">
+                        <div class="d-flex justify-content-between">
+                            <img src="./public/images/nomoresurf_full.png" alt="nomoresurf" height="25">
+
+                            <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 ms-3" data-bs-dismiss="modal" aria-label="Close">
+                                Back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-body">
+                    <div class="container h-lg-100">
+                        <div class="row h-100 py-5">
+                            <div class="col-12 col-lg-7 h-100">
+                                <div class="d-flex flex-column justify-content-center h-100 text-center text-lg-start">
+                                    <img src="./public/images/pixeltrue-giveaway.svg"" alt="upgrade" class="mb-5 mx-auto mx-lg-0 me-lg-auto img-fluid max-height-250" data-bs-toggle="tooltip" title="Illustration by Pixeltrue from Ouch!">
+                                    <p class="fw-bold fs-1">Go Pro. Be Productive.</p>
+                                    <p class="lead fs-4 mb-5">
+                                        Remove distraction for the price of a cup of coffee! ☕
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-lg-5 h-100">
+                                <div class="d-flex flex-column justify-content-center h-100">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <p class="mb-0 fw-bold display-6">$5.99</p>
+                                            <p class="mb-5 lead">One-time payment for a lifetime access!</p>
+    
+                                            <hr>
+                                            <p class="mb-3 lead">✔️ Unlimited items in block list</p>
+                                            <p class="mb-3 lead">✔️ Enable whitelist mode</p>
+                                            <p class="mb-3 lead">
+                                                ✔️ Access to all future paid features
+                                                <span data-bs-toggle="tooltip" data-bs-placement="right" title='The "Access to all future paid features" feature is provided as a courtesy to our Pro users and may be subject to change in the future.'>
+                                                    <i class="bi bi-info-circle"></i>
+                                                </span>
+                                            </p>
+    
+                                            <p class="mt-5 lead">Not ready to go pro? <a href="#" class="text-decoration-underline">Try it for free</a> for 7 days!</p>
+                                            <button id="upgradeBtn" type="button" class="d-block btn btn-danger rounded-pill mt-4 px-5 float-end" data-bs-dismiss="modal" aria-label="Upgrade">
+                                                Upgrade
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="./public/assets/bootstrap-5.2.0-dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="./public/assets/MDB5-STANDARD-UI-KIT-Free-5.0.0/js/mdb.min.js"></script>
-    <script src="./public/js/options.min.js" type="module"></script>
+    <script src="./public/js/options.js" type="module"></script>
 </body>
 
 </html>
