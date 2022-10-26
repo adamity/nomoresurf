@@ -1,4 +1,19 @@
 import { getBlocklist, getIsWhitelist, generateMathProblem, validateURL } from "./controller.min.js";
+import { ExtPay } from "../assets/ExtPay/ExtPay.min.js";
+
+const extpay = ExtPay('nomoresurf');
+
+extpay.getUser().then(user => {
+    if (user.paid) {
+        console.log('User is paid');
+    } else {
+        console.log('User is not paid');
+    }
+});
+
+document.getElementById('upgradeBtn').addEventListener('click', () => {
+    extpay.openPaymentPage();
+});
 
 let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -286,4 +301,5 @@ async function init() {
 
     renderView(blocklist, isWhitelist);
     toggleVisibility(confirmUnblockObject, unblockQuestionObject, "class");
+    document.getElementById("main").style.paddingTop = document.getElementsByTagName("nav")[0].offsetHeight + "px";
 }
