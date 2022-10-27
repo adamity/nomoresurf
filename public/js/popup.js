@@ -1,4 +1,8 @@
 import { getBlocklist, getIsWhitelist, getActiveTab } from "./controller.min.js";
+import { ExtPay } from "../assets/ExtPay/ExtPay.min.js";
+
+const extpay = ExtPay('nomoresurf');
+const pricingBtn = document.getElementById('pricingBtn');
 
 const blockSiteBtn = document.getElementById('blockSiteBtn');
 const editBlocklistBtn = document.getElementById('editBlocklistBtn');
@@ -12,14 +16,38 @@ let isWhitelist = false;
 init();
 
 editBlocklistBtn.addEventListener("click", () => {
-    if (chrome.runtime.openOptionsPage) {
-        chrome.runtime.openOptionsPage();
-    } else {
-        window.open(chrome.runtime.getURL('options.html'));
-    }
+    chrome.runtime.openOptionsPage(() => {
+        chrome.runtime.sendMessage({ action: "openBlocklistTab" });
+    });
+});
+
+pricingBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    chrome.tabs.query({
+            url: chrome.runtime.getURL("options.html")
+        },
+        tabs => {
+            if (tabs.length > 0) {
+                chrome.runtime.openOptionsPage(() => {
+                    chrome.runtime.sendMessage({ action: "openPricingTab" });
+                });
+            } else {
+                window.open(chrome.runtime.getURL('options.html#pricing'));
+            }
+        }
+    );
 });
 
 async function init() {
+    extpay.getUser().then(user => {
+        if (user.paid) {
+            console.log('User is paid');
+        } else {
+            pricingBtn.classList.remove('invisible');
+            console.log('User is not paid');
+        }
+    });
+
     activeTab = await getActiveTab();
     targetURL = new URL(activeTab.url);
 
