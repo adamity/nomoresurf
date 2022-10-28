@@ -1,11 +1,11 @@
 {
     "manifest_version": 3,
-    "name": "Nomoresurf: No more time-wasting websites!",
-    "version": "1.2.0",
+    "name": "Nomoresurf: Productivity Website Blocker",
+    "version": "1.3.0",
     "description": "Block time-wasting websites, answer math questions to unlock them. Make it harder to procrastinate!",
     "options_page": "options.html",
     "background": {
-        "service_worker": "./public/js/background.js",
+        "service_worker": "./public/js/background.min.js",
         "type": "module"
     },
     "permissions": [

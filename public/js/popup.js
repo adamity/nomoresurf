@@ -40,12 +40,7 @@ pricingBtn.addEventListener("click", (e) => {
 
 async function init() {
     extpay.getUser().then(user => {
-        if (user.paid) {
-            console.log('User is paid');
-        } else {
-            pricingBtn.classList.remove('invisible');
-            console.log('User is not paid');
-        }
+        if (!user.paid) pricingBtn.classList.remove('invisible');
     });
 
     activeTab = await getActiveTab();
@@ -64,14 +59,20 @@ async function init() {
         } else {
             blockSiteBtn.innerHTML = `Block <span class="text-lowercase">${targetURL.hostname}</span>`;
             blockSiteBtn.addEventListener("click", () => {
-                if (!isWhitelist) {
-                    blocklist.push(targetURL.hostname);
-                } else {
-                    let index = blocklist.indexOf(targetURL.hostname);
-                    blocklist.splice(index, 1);
-                }
-                chrome.storage.sync.set({ blocklist: blocklist });
-                window.close();
+                extpay.getUser().then(user => {
+                    if (user.paid || blocklist.length < 3) {
+                        if (!isWhitelist) {
+                            blocklist.push(targetURL.hostname);
+                        } else {
+                            let index = blocklist.indexOf(targetURL.hostname);
+                            blocklist.splice(index, 1);
+                        }
+                        chrome.storage.sync.set({ blocklist: blocklist });
+                        window.close();
+                    } else {
+                        pricingBtn.click();
+                    }
+                });
             });
         }
     }

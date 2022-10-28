@@ -16,13 +16,7 @@ blockedSite.innerText = url;
 
 extpay.getUser().then(user => {
     pricingBtn.classList.remove("d-none");
-
-    if (user.paid) {
-        pricingBtn.remove();
-        console.log('User is paid');
-    } else {
-        console.log('User is not paid');
-    }
+    if (user.paid) pricingBtn.remove();
 });
 
 redirectBtn.addEventListener("click", () => {

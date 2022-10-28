@@ -1,24 +1,15 @@
 import { getBlocklist, getIsWhitelist, generateMathProblem, validateURL } from "./controller.min.js";
 import { ExtPay } from "../assets/ExtPay/ExtPay.min.js";
 
-const extpay = ExtPay('nomoresurf');
-
-extpay.getUser().then(user => {
-    if (user.paid) {
-        console.log('User is paid');
-    } else {
-        console.log('User is not paid');
-    }
-});
-
-document.getElementById('upgradeBtn').addEventListener('click', () => {
-    extpay.openPaymentPage();
-});
-
 let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)
 })
+
+let pricingModal = new bootstrap.Modal(document.getElementById('pricingModal'))
+
+const extpay = ExtPay('nomoresurf');
+const pricingBtn = document.getElementById('pricingBtn');
 
 const addWebsiteBtn = document.getElementById('addWebsiteBtn');
 const websiteInput = document.getElementById("websiteInput");
@@ -54,22 +45,28 @@ init();
 addWebsiteBtn.addEventListener("click", async () => {
     addWebsiteBtn.disabled = true;
 
-    if (isWhitelist) {
-        isToggleWhitelist.checked = false;
-        selectedURL.value = websiteInput.value;
+    extpay.getUser().then(async user => {
+        if (user.paid || blocklist.length < 3) {
+            if (isWhitelist) {
+                isToggleWhitelist.checked = false;
+                selectedURL.value = websiteInput.value;
 
-        unblockModalText.innerText = "Add to Whitelist";
-        confirmText.innerText = `Do you really want to add ${selectedURL.value} to the whitelist?`;
+                unblockModalText.innerText = "Add to Whitelist";
+                confirmText.innerText = `Do you really want to add ${selectedURL.value} to the whitelist?`;
 
-        toggleVisibility(confirmUnblockObject, unblockQuestionObject, "class");
-        resetProgress();
-        setUnblockQuestion();
+                toggleVisibility(confirmUnblockObject, unblockQuestionObject, "class");
+                resetProgress();
+                setUnblockQuestion();
 
-        unblockModal.show();
-    } else {
-        let response = updateWebsiteList(websiteInput.value);
-        (await response).success ? showAlertMessage((await response).message) : showAlertMessage((await response).message, false);
-    }
+                unblockModal.show();
+            } else {
+                let response = updateWebsiteList(websiteInput.value);
+                (await response).success ? showAlertMessage((await response).message) : showAlertMessage((await response).message, false);
+            }
+        } else {
+            pricingModal.show();
+        }
+    });
 
     addWebsiteBtn.disabled = false;
 });
@@ -83,18 +80,23 @@ websiteInput.addEventListener("keyup", (event) => {
 
 whitelistMode.addEventListener('click', (event) => {
     event.preventDefault();
-
-    isToggleWhitelist.checked = true;
-    whitelistState.checked = whitelistMode.checked;
-
-    unblockModalText.innerText = "Whitelist Mode";
-    confirmText.innerText = `Do you really want to ${whitelistMode.checked ? 'enable' : 'disable'} whitelist mode?`;
-
-    toggleVisibility(confirmUnblockObject, unblockQuestionObject, "class");
-    resetProgress();
-    setUnblockQuestion();
-
-    unblockModal.show();
+    extpay.getUser().then(user => {
+        if (user.paid) {
+            isToggleWhitelist.checked = true;
+            whitelistState.checked = whitelistMode.checked;
+        
+            unblockModalText.innerText = "Whitelist Mode";
+            confirmText.innerText = `Do you really want to ${whitelistMode.checked ? 'enable' : 'disable'} whitelist mode?`;
+        
+            toggleVisibility(confirmUnblockObject, unblockQuestionObject, "class");
+            resetProgress();
+            setUnblockQuestion();
+        
+            unblockModal.show();
+        } else {
+            pricingModal.show();
+        }
+    });
 });
 
 submitAnswerBtn.addEventListener('click', () => {
@@ -141,6 +143,10 @@ confirmUnblockBtn.addEventListener('click', async () => {
 
     showAlertMessage((await response).message);
     resetProgress();
+});
+
+document.getElementById('upgradeBtn').addEventListener('click', () => {
+    extpay.openPaymentPage();
 });
 
 function renderView(blocklist, isWhitelist) {
@@ -295,6 +301,24 @@ function toggleVisibility(toHide, toShow, type) {
 }
 
 async function init() {
+    if (window.location.hash == "#pricing") {
+        history.pushState("", document.title, window.location.pathname + window.location.search);
+        pricingModal.show();
+    }
+
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.action == "openPricingTab") {
+            pricingModal.show();
+        } else if (request.action == "openBlocklistTab") {
+            pricingModal.hide();
+        }
+    });
+
+    extpay.getUser().then(user => {
+        pricingBtn.classList.remove("d-none");
+        if (user.paid) pricingBtn.remove();
+    });
+
     blocklist = await getBlocklist();
     isWhitelist = await getIsWhitelist();
     confirmUnblockBtn.disabled = true;
