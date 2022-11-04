@@ -149,6 +149,11 @@ document.getElementById('upgradeBtn').addEventListener('click', () => {
     extpay.openPaymentPage();
 });
 
+document.getElementById('loginBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    extpay.openLoginPage()
+});
+
 function renderView(blocklist, isWhitelist) {
     let blocklistContainer = document.getElementById('blocklistContainer');
     let blocklistEmpty = document.getElementById('blocklistEmpty');
