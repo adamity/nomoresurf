@@ -83,10 +83,10 @@ whitelistMode.addEventListener('click', (event) => {
     extpay.getUser().then(user => {
         if (user.paid) {
             isToggleWhitelist.checked = true;
-            whitelistState.checked = whitelistMode.checked;
+            whitelistState.checked = !whitelistMode.checked;
         
             unblockModalText.innerText = "Whitelist Mode";
-            confirmText.innerText = `Do you really want to ${whitelistMode.checked ? 'enable' : 'disable'} whitelist mode?`;
+            confirmText.innerText = `Do you really want to ${whitelistState.checked ? 'enable' : 'disable'} whitelist mode?`;
         
             toggleVisibility(confirmUnblockObject, unblockQuestionObject, "class");
             resetProgress();
