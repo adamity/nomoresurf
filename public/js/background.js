@@ -16,6 +16,8 @@ chrome.runtime.onInstalled.addListener(() => {
             chrome.storage.sync.set({ isWhitelist: false });
         }
     });
+
+    chrome.runtime.setUninstallURL("https://forms.gle/V2TYaqu1q8J4hhu89");
 });
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
