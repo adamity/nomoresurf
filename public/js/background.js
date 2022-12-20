@@ -18,6 +18,11 @@ chrome.runtime.onInstalled.addListener(() => {
     });
 
     chrome.runtime.setUninstallURL("https://forms.gle/V2TYaqu1q8J4hhu89");
+
+    chrome.tabs.create({
+        url: "https://forms.gle/VMwbSm9aHvZBj19K9",
+        active: true
+    });
 });
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
