@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Nomoresurf: Productivity Website Blocker",
-    "version": "1.3.1",
+    "version": "1.4.1",
     "description": "Block time-wasting websites by asking you a question to unblock them. Helps you break the habit of mindlessly browsing the web.",
     "options_page": "options.html",
     "background": {
